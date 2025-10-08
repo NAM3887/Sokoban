@@ -29,8 +29,8 @@ int main(int argc, char* argv[]) {
     // Load fonts for text boxes
     sf::Font alarmClock;
     sf::Font openSans;
-    alarmClock.loadFromFile("alarm clock.ttf");
-    openSans.loadFromFile("OpenSans-Regular.ttf");
+    alarmClock.loadFromFile("Assets/Fonts/alarm clock.ttf");
+    openSans.loadFromFile("Assets/Fonts/OpenSans-Regular.ttf");
 
     std::string mmSSTimeStr;
 
@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
     winText.setOutlineColor(sf::Color(0x000000FF));
 
     sf::SoundBuffer gameWonBuffer;
-    if (!gameWonBuffer.loadFromFile("mixkit-retro-game-notification-212.wav")) {
+    if (!gameWonBuffer.loadFromFile("Assets/Sound/mixkit-retro-game-notification-212.wav")) {
         std::cerr << "Failed to load sound file!" << std::endl;
         return 1;
     }
@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
     sf::RenderWindow window(sf::VideoMode(Sokban.width() * SB::TILE_SIZE,
          Sokban.height() * SB::TILE_SIZE), "Sokoban!");
 
-    std::ofstream olvlFile("testoutput.lvl", std::ios::out | std::ios::trunc);
+    std::ofstream olvlFile("Levels/testoutput.lvl", std::ios::out | std::ios::trunc);
     // Check if file is opened successfully
     if (!olvlFile.is_open()) {
         std::cerr << "Error: Unable to open output file." << std::endl;

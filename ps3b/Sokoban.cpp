@@ -8,40 +8,40 @@ namespace SB {
 // used to load textures everything else is initialized with >> operator
 Sokoban::Sokoban() : _height(0), _width(0), _gameWon(false) , _crates() {
     // load textures
-    if (!_blockTexture.loadFromFile("block_06.png"))
+    if (!_blockTexture.loadFromFile("Assets/Textures/Level/block_06.png"))
         std::cerr << "Could not load file" << std::endl;
-    if (!_groundTexture.loadFromFile("ground_01.png"))
+    if (!_groundTexture.loadFromFile("Assets/Textures/Level/ground_01.png"))
         std::cerr << "Could not load file" << std::endl;
-    if (!_storageTexture.loadFromFile("ground_04.png"))
+    if (!_storageTexture.loadFromFile("Assets/Textures/Level/ground_04.png"))
         std::cerr << "Could not load file" << std::endl;
-    if (!_playerDownTexture.loadFromFile("player_05.png"))
+    if (!_crateTexture.loadFromFile("Assets/Textures/Level/crate_03.png"))
         std::cerr << "Could not load file" << std::endl;
-    if (!_crateTexture.loadFromFile("crate_03.png"))
+    if (!_playerDownTexture.loadFromFile("Assets/Textures/Player/player_05.png"))
         std::cerr << "Could not load file" << std::endl;
-    if (!_playerUpTexture.loadFromFile("player_08.png"))
+    if (!_playerUpTexture.loadFromFile("Assets/Textures/Player/player_08.png"))
         std::cerr << "Could not load file" << std::endl;
-    if (!_playerLeftTexture.loadFromFile("player_20.png"))
+    if (!_playerLeftTexture.loadFromFile("Assets/Textures/Player/player_20.png"))
         std::cerr << "Could not load file" << std::endl;
-    if (!_playerRightTexture.loadFromFile("player_17.png"))
+    if (!_playerRightTexture.loadFromFile("Assets/Textures/Player/player_17.png"))
         std::cerr << "Could not load file" << std::endl;
 }
 Sokoban::Sokoban(std::string lvlPath) : _gameWon(false) , _crates() {
     // load textures
-    if (!_blockTexture.loadFromFile("block_06.png"))
+    if (!_blockTexture.loadFromFile("Assets/Textures/Level/block_06.png"))
         std::cerr << "Could not load file" << std::endl;
-    if (!_groundTexture.loadFromFile("ground_01.png"))
+    if (!_groundTexture.loadFromFile("Assets/Textures/Level/ground_01.png"))
         std::cerr << "Could not load file" << std::endl;
-    if (!_storageTexture.loadFromFile("ground_04.png"))
+    if (!_storageTexture.loadFromFile("Assets/Textures/Level/ground_04.png"))
         std::cerr << "Could not load file" << std::endl;
-    if (!_playerDownTexture.loadFromFile("player_05.png"))
+    if (!_crateTexture.loadFromFile("Assets/Textures/Level/crate_03.png"))
         std::cerr << "Could not load file" << std::endl;
-    if (!_crateTexture.loadFromFile("crate_03.png"))
+    if (!_playerDownTexture.loadFromFile("Assets/Textures/Player/player_05.png"))
         std::cerr << "Could not load file" << std::endl;
-    if (!_playerUpTexture.loadFromFile("player_08.png"))
+    if (!_playerUpTexture.loadFromFile("Assets/Textures/Player/player_08.png"))
         std::cerr << "Could not load file" << std::endl;
-    if (!_playerLeftTexture.loadFromFile("player_20.png"))
+    if (!_playerLeftTexture.loadFromFile("Assets/Textures/Player/player_20.png"))
         std::cerr << "Could not load file" << std::endl;
-    if (!_playerRightTexture.loadFromFile("player_17.png"))
+    if (!_playerRightTexture.loadFromFile("Assets/Textures/Player/player_17.png"))
         std::cerr << "Could not load file" << std::endl;
     std::ifstream lvlFile(lvlPath);
     lvlFile >> *this;
