@@ -8,9 +8,9 @@ OBJECTS = Sokoban.o
 # The name program
 PROGRAM = Sokoban
 
-.PHONY: all clean lint
+.PHONY: all clean lint 
 
-all: $(PROGRAM) Sokoban.a
+all: $(PROGRAM) Sokoban.a test
 
 # Wildcard recipe to make .o files from corresponding .cpp file
 %.o: %.cpp $(DEPS)
@@ -22,8 +22,10 @@ $(PROGRAM): main.o $(OBJECTS)
 Sokoban.a:
 	ar rcs Sokoban.a $(OBJECTS)
 
+test: test.o $(OBJECTS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LIB)
 clean:
-	rm -f *.o *.a $(PROGRAM) 
+	rm -f *.o *.a $(PROGRAM) test
 
 lint:
 	cpplint *.cpp *.hpp

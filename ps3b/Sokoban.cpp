@@ -1,8 +1,6 @@
 // Copyright [2024] <Michael Stanley>
-// 
 #include "Sokoban.hpp"
-#include <iostream>
-#include <string>
+
 #include <fstream>
 
 namespace SB {
@@ -27,26 +25,55 @@ Sokoban::Sokoban() : _height(0), _width(0), _gameWon(false) , _crates() {
     if (!_playerRightTexture.loadFromFile("player_17.png"))
         std::cerr << "Could not load file" << std::endl;
 }
-
+Sokoban::Sokoban(std::string lvlPath) : _gameWon(false) , _crates() {
+    // load textures
+    if (!_blockTexture.loadFromFile("block_06.png"))
+        std::cerr << "Could not load file" << std::endl;
+    if (!_groundTexture.loadFromFile("ground_01.png"))
+        std::cerr << "Could not load file" << std::endl;
+    if (!_storageTexture.loadFromFile("ground_04.png"))
+        std::cerr << "Could not load file" << std::endl;
+    if (!_playerDownTexture.loadFromFile("player_05.png"))
+        std::cerr << "Could not load file" << std::endl;
+    if (!_crateTexture.loadFromFile("crate_03.png"))
+        std::cerr << "Could not load file" << std::endl;
+    if (!_playerUpTexture.loadFromFile("player_08.png"))
+        std::cerr << "Could not load file" << std::endl;
+    if (!_playerLeftTexture.loadFromFile("player_20.png"))
+        std::cerr << "Could not load file" << std::endl;
+    if (!_playerRightTexture.loadFromFile("player_17.png"))
+        std::cerr << "Could not load file" << std::endl;
+    std::ifstream lvlFile(lvlPath);
+    lvlFile >> *this;
+}
 // return true when there are no crates
 // only storage with crate
 bool Sokoban::isWon() {
-    for (int y = 0; y < this->_height; y++) {
-        for (int x = 0; x < this->_width; x++) {
-            if (this->_tiles[y][x].tileType == crate)
-                return false;
+    // for each vector in _tiles
+    for (const auto& insideVec : this->_tiles) {
+        // for tile in insideVec if tileType == crate
+        // return iterator to tile with crate
+        auto it = std::find_if(insideVec.begin(),
+            insideVec.end(), [](const Tile& tile)
+            { return tile.tileType == TileType::crate;});
+
+        if (it != insideVec.end()) {
+            return false;
         }
     }
+    // make player face user after win
+    this->_tiles[_playerPosGrid.y][_playerPosGrid.x].tileType = playerDown;
     return true;
 }
-
-// checks if the player can move to the tile
+// Checks if the player can move to the tile
 //  if the tile is "walkable" (meaning player can walk to tile)
 //  if it is then move if not do nothing
 // if there is a crate in the way, check if the crate can move
 //  if the crate can move then move the crate and the player
 //  if not then do nothing
 void Sokoban::movePlayer(Direction direction) {
+     if (this->isWon())
+        return;
     sf::Vector2u pos = this->playerLoc();
     sf::Vector2u posAfterMove;
     TileType playerTypeWithDir;
@@ -93,43 +120,53 @@ void Sokoban::movePlayer(Direction direction) {
         if (posAfterMove.y + yOffset >= unsigned(_height) ||
         posAfterMove.y + yOffset < 0)
             return;
-        if (this->_tiles[posAfterMove.y+yOffset][posAfterMove.x+xOffset].walkable) {
+        if (this->_tiles[posAfterMove.y+yOffset]
+            [posAfterMove.x+xOffset].walkable) {
             // get crate at position and move it
             for (auto& c : _crates) {
                 if (c.gridPos == posAfterMove) {
-                    if (c.gridPos.x + xOffset >= unsigned(_width) || int(c.gridPos.x) + xOffset < 0
-                        || c.gridPos.y + yOffset >= unsigned(_height) || c.gridPos.y + yOffset < 0)
+                    if (c.gridPos.x + xOffset >= unsigned(_width) ||
+                    static_cast<int>(c.gridPos.x) + xOffset < 0
+                    || c.gridPos.y + yOffset >= unsigned(_height) ||
+                    c.gridPos.y + yOffset < 0)
                         return;
                     c.previous = c.currTile;
-                    c.currTile = this->_tiles[posAfterMove.y + yOffset][posAfterMove.x + xOffset].tileType;
+                    c.currTile = this->_tiles[posAfterMove.y + yOffset]
+                    [posAfterMove.x + xOffset].tileType;
                     // update crate Position in grid after move
                     c.gridPos.y += yOffset;
                     c.gridPos.x += xOffset;
                     // change new tiletype
-                    if (this->_tiles[posAfterMove.y + yOffset][posAfterMove.x + xOffset].tileType == storage)
-                        this->_tiles[posAfterMove.y + yOffset][posAfterMove.x + xOffset].tileType = storageWithCrate;
+                    if (this->_tiles[posAfterMove.y + yOffset]
+                    [posAfterMove.x + xOffset].tileType == storage)
+                    this->_tiles[posAfterMove.y + yOffset]
+                    [posAfterMove.x + xOffset].tileType = storageWithCrate;
                     else
-                        this->_tiles[posAfterMove.y + yOffset][posAfterMove.x+xOffset].tileType = crate;
+                        this->_tiles[posAfterMove.y + yOffset]
+                        [posAfterMove.x+xOffset].tileType = crate;
                     // set new tile as not walkable
                     // and prev tile to walkable
-                    this->_tiles[posAfterMove.y+yOffset][posAfterMove.x+xOffset].walkable = false;
-                    this->_tiles[posAfterMove.y][posAfterMove.x].tileType = c.previous;
-                    this->_tiles[posAfterMove.y][posAfterMove.x].walkable = true;
+                    this->_tiles[posAfterMove.y+yOffset]
+                        [posAfterMove.x+xOffset].walkable = false;
+                    this->_tiles[posAfterMove.y]
+                        [posAfterMove.x].tileType = c.previous;
+                    this->_tiles[posAfterMove.y]
+                        [posAfterMove.x].walkable = true;
                     break;
                 }
             }
-        }
-        else
-            return;
+        } else { return; }
     }
     if (this->_tiles[posAfterMove.y][posAfterMove.x].walkable) {
             _player.previous = _player.currTile;
-            _player.currTile = this->_tiles[posAfterMove.y][posAfterMove.x].tileType;
+            _player.currTile = this->_tiles[posAfterMove.y]
+                [posAfterMove.x].tileType;
             // update player Position in grid after move
             _playerPosGrid.y += yOffset;
             _playerPosGrid.x += xOffset;
-            // change new tile to player tile 
-            this->_tiles[posAfterMove.y][posAfterMove.x].tileType = playerTypeWithDir; 
+            // change new tile to player tile
+            this->_tiles[posAfterMove.y]
+                [posAfterMove.x].tileType = playerTypeWithDir;
             this->_tiles[pos.y][pos.x].tileType = _player.previous;
             this->_tiles[pos.y][pos.x].walkable = true;
      }
@@ -171,21 +208,23 @@ void Sokoban::draw(sf::RenderTarget& target,
                     tileSprite.setTexture(_playerRightTexture);
                     break;
                 default:
-                    // Handle any other cases or ignore
                     break;
             }
-            // draw background texture if tile is player or crate
-            if (_tiles[y][x].tileType == playerDown || _tiles[y][x].tileType ==  playerUp ||
-                _tiles[y][x].tileType == playerLeft || _tiles[y][x].tileType ==  playerRight ){
-                if(_player.currTile == storage)
+            // draw background texture if tile is player
+            if (_tiles[y][x].tileType == playerDown ||
+                _tiles[y][x].tileType == playerUp ||
+                _tiles[y][x].tileType == playerLeft ||
+                _tiles[y][x].tileType == playerRight ) {
+                if (_player.currTile == storage)
                     BackgroundSprite.setTexture(_storageTexture);
-                else 
-                    BackgroundSprite.setTexture(_groundTexture);  
+                else
+                    BackgroundSprite.setTexture(_groundTexture);
             }
+            // draw background texture if tile is crate
             if (_tiles[y][x].tileType == crate)
                 BackgroundSprite.setTexture(_groundTexture);
-            if  (_tiles[y][x].tileType == storageWithCrate )
-                BackgroundSprite.setTexture(_storageTexture);  
+            if  (_tiles[y][x].tileType == storageWithCrate)
+                BackgroundSprite.setTexture(_storageTexture);
             BackgroundSprite.setPosition(x * TILE_SIZE, y * TILE_SIZE);
             target.draw(BackgroundSprite, states);
             tileSprite.setPosition(x * TILE_SIZE, y * TILE_SIZE);
@@ -245,7 +284,7 @@ std::istream& operator >> (std::istream& is, Sokoban& Sok) {
                 // check if crate is already on storage
                 if (Sok._tiles[g.y][g.x].tileType == storageWithCrate)
                     Sok._crates.push_back(c(storage));
-                else 
+                else
                     Sok._crates.push_back(c(ground));
             }
         }
@@ -293,5 +332,28 @@ std::ostream& operator<<(std::ostream& os, const Sokoban& Sok) {
         os << std::endl;
     }
     return os;
+}
+
+// reset function
+void Sokoban::reset() {
+    this->_gameWon = false;
+    // clear vectors
+    std::ifstream levelFile(this->_lvlFilePath);
+    this->_tiles.clear();
+    this->_crates.clear();
+    levelFile >> *this;
+    levelFile.close();
+}
+
+// returns time in a mm:ss string
+std::string Sokoban::getTimeElapsedStr(const sf::Clock& clock) {
+    int seconds = clock.getElapsedTime().asSeconds();
+    int minutes = seconds / 60;
+    seconds %= 60;
+    // if time is less than 10 add 0 before digit
+    std::string mmSSTimeStr = (minutes < 10 ? "0" : "") +
+        std::to_string(minutes) + ":" +
+        (seconds < 10 ? "0" : "") + std::to_string(seconds);
+    return mmSSTimeStr;
 }
 }  // namespace SB
